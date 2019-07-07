@@ -29,28 +29,62 @@ server.on('connection', connection => {
 
   console.log(connection.remoteAddress + " : " + connection.remotePort + " just connected.\n");
 
+
+  const listFiles = (callback) => {
+    const listOfFiles = [];
+    fs.readdir(FILE_PATH, (error, files) =>  {
+      for (let i = 0; i < files.length; i++) {
+        if (/[.]txt/.test(files[i])) {
+          listOfFiles.push(files[i]);
+        }
+      }
+      listOfFiles.push(MESSAGES[2]);
+      callback(null,listOfFiles.join('\n'));
+    });
+  };
+
+  const readFile = (fileName, callback) => {
+    const fullFile = FILE_PATH + fileName;
+    console.log(fullFile);
+    fs.readFile(fullFile, 'utf8', (err, fileContent) => {
+      if (err) {
+        callback(err, null);
+      } else {
+        callback(null, fileContent);
+      }
+    });
+  };
+
   connection.setEncoding('utf8'); // interpret data as text
 
   connection.write(`${MESSAGES[0]}\n${MESSAGES[1]}`);
 
   connection.on('data', (data) => {
-
-
     if (/list/.test(data)) {
-      let listOfFiles = [];
-      fs.readdir(FILE_PATH, (error, files) =>  {
-        for (let i = 0; i < files.length; i++) {
-          if (/[.]txt/.test(files[i])) {
-            listOfFiles.push(files[i]);
-          }
+      listFiles((error,list) => {
+        if (error) {
+          return error;
+        } else {
+          connection.write(list);
         }
-        listOfFiles.push(MESSAGES[2]);
-        connection.write(listOfFiles.join('\n'));
+      });
+    }
+
+    if (/get/.test(data)) {
+      const fileName = data.split(' ')[1];
+      console.log(fileName);
+      readFile(fileName,(error,fileContent) => {
+        if (error) {
+          return error;
+        } else {
+          connection.write(fileContent);
+        }
       });
     }
   });
 
   connection.on('end', () => {
+    console.log("Hmmm");
     for (const key in clients) {
       if (clients[key] === connection) {
         delete clients[key];

@@ -11,16 +11,26 @@ const client = net.createConnection({
   port: 3000
 });
 
+const askQuestion = (callback) => {
+  rl.question(`> `, (answer) => {
+    callback(null, answer);
+    rl.close();
+  });
+};
+
 client.setEncoding('utf8'); // interpret data as text
 
 client.on('connect', () => {
 
   client.on('data', (data) => {
     console.log(data);
-    
-    rl.question(`> `, (command) => {
-      client.write(command);
-      rl.close();
+  
+    askQuestion((error,answer) => {
+      if (error) {
+        return error;
+      } else {
+        client.write(answer);
+      }
     });
   });
 });
