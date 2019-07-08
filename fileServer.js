@@ -49,7 +49,11 @@ server.on('connection', connection => {
     console.log(fullFile);
     fs.readFile(fullFile, 'utf8', (err, fileContent) => {
       if (err) {
-        callback(err, null);
+        if (err.code === 'ENOENT') {
+          return callback(null, false);
+        } else {
+          return callback(err,null);
+        }
       } else {
         callback(null, fileContent);
       }
@@ -78,7 +82,11 @@ server.on('connection', connection => {
         if (error) {
           return error;
         } else {
-          return connection.write(fileContent);
+          if (!fileContent) {
+            return connection.write(`The file ${fileName} wasn't found on the server.`);
+          } else {
+            return connection.write(fileContent);
+          }
         }
       });
     }
@@ -100,7 +108,6 @@ server.on('connection', connection => {
 //Add event listener for close events
 server.on('close', () => {
   console.log(`Server disconnected`);
-  process.exit();
 });
 
 //Add listener for error events
