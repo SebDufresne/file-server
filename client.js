@@ -8,13 +8,12 @@ const rl = readline.createInterface({
 
 const client = net.createConnection({
   host: 'localhost', // change to IP address
-  port: 3000
+  port: 3001
 });
 
 const askQuestion = (callback) => {
   rl.question(`> `, (answer) => {
     callback(null, answer);
-    rl.close();
   });
 };
 
@@ -24,7 +23,7 @@ client.on('connect', () => {
 
   client.on('data', (data) => {
     console.log(data);
-  
+
     askQuestion((error,answer) => {
       if (error) {
         return error;
