@@ -37,6 +37,7 @@ client.on('connect', () => {
 //Add event listener for close events
 client.on('close', () => {
   console.log(`Server disconnected`);
+  process.exit();
 });
 
 //Add listener for error events

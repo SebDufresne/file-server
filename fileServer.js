@@ -11,6 +11,7 @@ const MESSAGES = [
   `Command list:\n` +
   `list: list all available files\n` +
   `get <file_name>: get the content of a file\n` +
+  `quit: exits the file server\n` +
   `What would you like to do?`,
   'You can retrieve a file with the command get <file_name>',
   
@@ -81,6 +82,9 @@ server.on('connection', connection => {
         }
       });
     }
+    if (/quit/.test(data)) {
+      connection.end();
+    }
   });
 
   connection.on('end', () => {
@@ -96,6 +100,7 @@ server.on('connection', connection => {
 //Add event listener for close events
 server.on('close', () => {
   console.log(`Server disconnected`);
+  process.exit();
 });
 
 //Add listener for error events
