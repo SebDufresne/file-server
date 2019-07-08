@@ -65,7 +65,7 @@ server.on('connection', connection => {
         if (error) {
           return error;
         } else {
-          connection.write(list);
+          return connection.write(list);
         }
       });
     }
@@ -77,14 +77,14 @@ server.on('connection', connection => {
         if (error) {
           return error;
         } else {
-          connection.write(fileContent);
+          return connection.write(fileContent);
         }
       });
     }
   });
 
   connection.on('end', () => {
-    console.log("Hmmm");
+    console.log("Connection ended by client");
     for (const key in clients) {
       if (clients[key] === connection) {
         delete clients[key];

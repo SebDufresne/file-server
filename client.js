@@ -29,7 +29,7 @@ client.on('connect', () => {
       if (error) {
         return error;
       } else {
-        client.write(answer);
+        return client.write(answer);
       }
     });
   });
